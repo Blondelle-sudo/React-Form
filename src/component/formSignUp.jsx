@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react'
+import validateInformation from '../hook/validateInformation'
+// import useForm from './useForm';
 import "../styles/formStyle.css"
 
-const FormSignUp = () => {
+const FormSignUp = ({submitForm}) => {
+  // const {handleChange, values} = useForm();
 
   const [values , setValues] = useState({
     username:'',
@@ -11,21 +14,37 @@ const FormSignUp = () => {
   })
 
   const [errors, setErrors] = useState({})
+
+  const [dataisCorrect, setDataisCorrect] = useState(false)
   
-  const handleChange = (e) =>{
-    const [name, value] = e.target 
+  const handleChange = (event) =>{
 
     setValues({
       ...values,
-      [name]:value
+      [event.target.name]:event.target.value
     })
   }
+
+  const handleSubmit = (event) =>{
+    event.preventDefault();
+
+    setErrors(validateInformation(values));
+    setDataisCorrect(true); 
+  }
+
+  useEffect( () =>{
+    if(Object.keys(errors).length === 0 && dataisCorrect){
+      submitForm(true);
+    }
+  },
+   [errors]
+  )
   return (
     <div className='form-content'>
-      <form action="" className="formElement">
-        <h1>
+      <form action="" className="formElement" onSubmit={handleSubmit} noValidate>
+        <h2>
           Get started with React Form. Create your account by filling out the information below
-        </h1>
+        </h2>
         <div className="form-inputs">
           <label htmlFor="userName" className="form-labels">
             Username
@@ -36,7 +55,9 @@ const FormSignUp = () => {
               name="username" 
               className='form-input' 
               placeholder='enter your username'
+              value ={values.username}
               onChange={handleChange}/>
+          {errors.username && <p> {errors.username} </p> }
         </div>
         <div className="form-inputs">
           <label htmlFor="email" className="form-labels">
@@ -44,11 +65,13 @@ const FormSignUp = () => {
           </label>
           <input 
               id="email"
-              type="text"  
+              type="email"  
               name="email" 
               className='form-input' 
               placeholder='enter your email'
+              value ={values.email}
               onChange={handleChange}/>
+              {errors.email && <p> {errors.email} </p> }
         </div>
         <div className="form-inputs">
           <label htmlFor="password" className="form-labels">
@@ -56,11 +79,13 @@ const FormSignUp = () => {
           </label>
           <input 
               id="password"
-              type="text"  
+              type="password"  
               name="password" 
               className='form-input' 
               placeholder='enter your password'
+              value ={values.password}
               onChange={handleChange}/>
+          {errors.password && <p> {errors.password} </p> }
         </div>
         <div className="form-inputs">
           <label htmlFor="password2" className="form-labels">
@@ -68,11 +93,13 @@ const FormSignUp = () => {
           </label>
           <input 
               id="password2"
-              type="text"  
+              type="password"  
               name="password2" 
               className='form-input' 
               placeholder='conrfirm your password'
+              value ={values.password2}
               onChange={handleChange}/>
+          {errors.password2 && <p> {errors.password2} </p> }
         </div>
         <button className="form-btn">
           Sign Up
